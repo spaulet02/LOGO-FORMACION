@@ -97,6 +97,12 @@ function tamPng(buf) { return { w: buf.readUInt32BE(16), h: buf.readUInt32BE(20)
 
 function figura(el, anchoMax = ANCHO, altoMaxCm = 17.5) {
   const buf = leerImagen(el.file);
+  if (el.file.startsWith("assets/ilustraciones/")) {
+    const s0 = tamPng(buf); let wc = (ANCHO / CM) * 0.94, hc = wc * s0.h / s0.w;
+    if (hc > 9.5) { wc *= 9.5 / hc; hc = 9.5; }
+    return new Paragraph({ alignment: AlignmentType.CENTER, keepNext: true, keepLines: true, spacing: { before: 200, after: 80 },
+      children: [new ImageRun({ type: "png", data: buf, transformation: { width: Math.round(wc / 2.54 * 96), height: Math.round(hc / 2.54 * 96) } })] });
+  }
   const t0 = TAM[el.file] || [el.cx, el.cy];
   let wcm = t0[0] ? t0[0] / 360000 : 12, hcm = t0[1] ? t0[1] / 360000 : 8;
   if (!t0[0]) { const s = tamPng(buf); hcm = wcm * s.h / s.w; }
@@ -201,7 +207,7 @@ const ESTILO_RECUADRO = {
   objetivos: { barra: C.yellow, fondo: C.fondoAzul, etiqueta: null, color: C.navy },
   atencion:  { barra: C.aviso, fondo: C.fondoAviso, etiqueta: "ATENCIÓN", color: "8A6200" },
   ejemplo:   { barra: C.navy2, fondo: C.blanco, etiqueta: "EJEMPLO", color: C.navy2 },
-  seguridad: { barra: C.seg, fondo: C.fondoSeg, etiqueta: "⚠ SEGURIDAD", color: C.seg },
+  seguridad: { barra: C.seg, fondo: C.fondoSeg, etiqueta: "SEGURIDAD", color: C.seg },
   aviso:     { barra: C.aviso, fondo: C.fondoAviso, etiqueta: "ATENCIÓN", color: "8A6200" },
   nota:      { barra: C.grisClaro, fondo: C.fondo, etiqueta: null, color: C.navy2 },
   antes:     { barra: C.yellow, fondo: C.fondo, etiqueta: null, color: C.navy },
@@ -241,12 +247,15 @@ function recuadro(el, ctx) {
   const filas = [];
   let idPract = null;
   if (tipo === "practica" && tit) { idPract = idMarcador(); practicas.push({ texto: plano(tit.runs).replace(/\s+/g, " ").trim(), id: idPract }); }
+  const icono = ["objetivos", "ejemplo", "recuerda", "seguridad", "atencion", "aviso", "soluciones", "nota", "antes", "pistas", "comprueba"].includes(tipo)
+    ? new ImageRun({ type: "png", data: fs.readFileSync(path.join(RAIZ, `assets/ilustraciones/iconos/${{ aviso: "atencion", antes: "objetivos", pistas: "nota", comprueba: "soluciones" }[tipo] || tipo}.png`)),
+      transformation: { width: 17, height: 17 } }) : null;
   const titPar = (color) => new Paragraph({ style: "TituloRecuadro", keepNext: true,
-    children: idPract ? [new Bookmark({ id: idPract, children: [
-      ...runsDe(tit.runs, { font: F.sans, bold: true, color, size: 20 })] })] : [
+    children: (icono ? [icono, new TextRun({ text: "  " })] : []).concat(idPract ? [new Bookmark({ id: idPract, children: [
+      ...runsDe(tit.runs, { font: F.sans, bold: true, color, size: 20 })] })] : ([
       ...(st.etiqueta ? [new TextRun({ text: st.etiqueta + (tit ? "  ·  " : ""), color: st.color, bold: true, size: 16, characterSpacing: 10 })] : []),
       ...(tit ? runsDe(tit.runs, { font: F.sans, bold: true, color, size: 20 }) : []),
-    ] });
+    ])) });
 
   const margenes = { top: 110, bottom: 110, left: 200, right: 200 };
   if (st.cabecera) {
@@ -472,8 +481,15 @@ function apertura(el, etiqueta) {
         new TextRun({ text: m ? m[1] : "", font: F.sans, size: 20, bold: true, color: C.yellow, characterSpacing: 60 })] }),
       new Paragraph({ style: "Heading1", children: [new Bookmark({ id, children: [new TextRun({ text: nb(m ? m[2] : el.text), color: C.blanco })] })] }),
     ] });
+  const clave = el.text.match(/^(\d+)\./) ? el.text.match(/^(\d+)\./)[1] : (el.text.match(/^Anexo ([A-Z])/) || [0, "A"])[1];
+  const fIlus = path.join(RAIZ, `assets/ilustraciones/apertura/cap_${clave}.png`);
+  const ilus = fs.existsSync(fIlus) ? [new ImageRun({ type: "png", data: fs.readFileSync(fIlus),
+    transformation: { width: Math.round(6.3 / 2.54 * 96), height: Math.round(4.2 / 2.54 * 96) },
+    floating: { horizontalPosition: { relative: HorizontalPositionRelativeFrom.PAGE, offset: EMU(21 - 2.0 - 6.3) },
+      verticalPosition: { relative: VerticalPositionRelativeFrom.PAGE, offset: EMU(1.2) },
+      behindDocument: true, allowOverlap: true, lockAnchor: true, layoutInCell: false, wrap: { type: TextWrappingType.NONE } } })] : [];
   return [
-    new Paragraph({ spacing: { before: 0, after: 0, line: 20, lineRule: "exact" }, children: [banda] }),
+    new Paragraph({ spacing: { before: 0, after: 0, line: 20, lineRule: "exact" }, children: [banda, ...ilus] }),
     new Table({ width: { size: ANCHO, type: WidthType.DXA }, columnWidths: [ANCHO], layout: TableLayoutType.FIXED,
       borders: { top: SIN, bottom: SIN, left: SIN, right: SIN, insideHorizontal: SIN, insideVertical: SIN },
       rows: [new TableRow({ height: { value: Math.round(5.6 * CM), rule: HeightRule.EXACT }, children: [celda] })] }),
