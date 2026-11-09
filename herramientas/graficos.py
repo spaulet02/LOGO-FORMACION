@@ -159,27 +159,6 @@ def contraportada_completa():
     pat = Image.new("RGB", (W, int(H * 0.42)), NAVY)
     patron_fup(ImageDraw.Draw(pat), 0, 40, W, pat.height - 60, NAVY_2, NAVY_3)
     img.paste(pat.resize((W3, int(H3 * 0.42)), Image.LANCZOS), (0, int(H3 * 0.58)))
-    x0, y = 300, 420
-    d.rectangle([x0, y, x0 + 180, y + 14], fill=YELLOW)
-    y += 80
-    d.text((x0, y), "LOGO! 9", font=mf("Bold", 150), fill=WHITE)
-    y += 200
-    d.text((x0, y), "LOGO!Soft Comfort V9 y LOGO! TDE 9", font=mf("SemiBold", 70), fill=WHITE)
-    y += 170
-    texto = ("Cinco bloques de trabajo en el banco: del primer contacto con el módulo y los "
-             "automatismos digitales a las señales analógicas, la pantalla LOGO! TDE 9, las "
-             "comunicaciones y los proyectos integrados.")
-    f = mf("Regular", 54)
-    linea, lineas = "", []
-    for p in texto.split():
-        prueba = (linea + " " + p).strip()
-        if d.textlength(prueba, font=f) > W3 - 2 * x0:
-            lineas.append(linea); linea = p
-        else:
-            linea = prueba
-    lineas.append(linea)
-    for l in lineas:
-        d.text((x0, y), l, font=f, fill=(201, 207, 221)); y += 84
     img.save(OUT / "contraportada_completa.png", optimize=True)
 
 

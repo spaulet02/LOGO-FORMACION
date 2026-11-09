@@ -323,15 +323,11 @@ function tabla(el, ctx) {
 
 // ---------------------------------------------------------------- cabeceras y pies
 function rotuloCab(texto, derecha) {
-  return new Paragraph({ style: "Cabecera", alignment: derecha ? AlignmentType.RIGHT : AlignmentType.LEFT,
-    children: [new TextRun({ text: texto })] });
+  return new Paragraph({ children: [] });
 }
 function pieNum(derecha) {
-  const num = new TextRun({ children: [PageNumber.CURRENT], bold: true, color: C.navy, size: 20, font: F.sans });
-  const sep = new TextRun({ text: "   ■   ", color: C.yellow, size: 14 });
-  const marca = new TextRun({ text: "ITECAM", color: C.gris, size: 15, font: F.sans, characterSpacing: 20 });
   return new Paragraph({ style: "Pie", alignment: derecha ? AlignmentType.RIGHT : AlignmentType.LEFT,
-    children: derecha ? [marca, sep, num] : [num, sep, marca] });
+    children: [new TextRun({ children: [PageNumber.CURRENT], bold: true, color: C.navy, size: 20, font: F.sans })] });
 }
 function pestana(et, pos, lado) {
   const w = 1.2, h = 2.8;
@@ -342,8 +338,8 @@ function pestana(et, pos, lado) {
       behindDocument: false, allowOverlap: true, lockAnchor: true, layoutInCell: false, wrap: { type: TextWrappingType.NONE } } });
 }
 function cabecerasCapitulo(textoImpar, textoPar, tab) {
-  const cab = (texto, der, conTab) => new Paragraph({ style: "Cabecera", alignment: der ? AlignmentType.RIGHT : AlignmentType.LEFT,
-    children: [...(tab && conTab ? [pestana(tab.et, tab.pos, der ? "der" : "izq")] : []), new TextRun({ text: texto })] });
+  const cab = (texto, der, conTab) => new Paragraph({ alignment: der ? AlignmentType.RIGHT : AlignmentType.LEFT,
+    children: [...(tab && conTab ? [pestana(tab.et, tab.pos, der ? "der" : "izq")] : [])] });
   return {
     headers: {
       default: new Header({ children: [cab(textoImpar, true, true)] }),
