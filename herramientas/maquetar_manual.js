@@ -42,7 +42,7 @@ const EMU = (cm) => Math.round(cm * 360000);
 function runsDe(runs, base = {}) {
   const out = [];
   for (const r of runs || []) {
-    let x = (r.x || "").replace(/\t/g, " ");
+    let x = nb((r.x || "").replace(/\t/g, " "));
     const partes = x.split("\n");
     partes.forEach((p, i) => {
       const o = { text: p, font: base.font || F.cuerpo, size: base.size, color: base.color, bold: base.bold || !!r.b,
@@ -56,6 +56,9 @@ function runsDe(runs, base = {}) {
   return out;
 }
 const plano = (runs) => (runs || []).map((r) => r.x).join("");
+// espacios de no separación en nombres que no deben partirse
+const nb = (t) => (t || "").replace(/LOGO! (?=\d|TDE|N\b)/g, "LOGO!\u00A0").replace(/TDE (?=9)/g, "TDE\u00A0").replace(/ V(?=9\b)/g, "\u00A0V")
+  .replace(/(\d) (V|mA|kΩ|Ω|A|s|ms|h|cm|°C|%)(?=[\s.,;:)]|$)/g, "$1\u00A0$2");
 
 function cortarTitulo(t, max = 62) {
   if (t.length <= max) return t;
@@ -187,7 +190,7 @@ function titulo(el, ctx) {
   const m = el.text.match(/^((?:\d+|[A-Z])(?:\.\d+)+\.?)\s+(.*)$/);
   let hijos;
   if (m && lvl === 2) hijos = [new TextRun({ text: "\u00A0" + m[1] + "\u00A0", color: C.blanco, shading: { type: ShadingType.CLEAR, fill: C.navy, color: "auto" } }),
-    new TextRun({ text: "\u2002" + m[2] })];
+    new TextRun({ text: "\u2002" + nb(m[2]) })];
   else if (m) hijos = [new TextRun({ text: m[1] + "\u2002", color: C.navy }), new TextRun({ text: m[2] })];
   else hijos = [new TextRun({ text: el.text })];
   return [new Paragraph({ style: estilo, children: [new Bookmark({ id, children: hijos })] })];
@@ -437,7 +440,7 @@ function portadilla(b, capitulos) {
       esp(40),
       new Paragraph({ spacing: { after: 0 }, children: [new Bookmark({ id, children: [new TextRun({ text: "BLOQUE", font: F.sans, size: 26, bold: true, color: C.yellow, characterSpacing: 60 })] })] }),
       new Paragraph({ spacing: { after: 120, line: 240, lineRule: "auto" }, children: [new TextRun({ text: b.romano, font: F.sans, size: 140, bold: true, color: C.blanco })] }),
-      new Paragraph({ spacing: { after: 120, line: 240, lineRule: "auto" }, children: [new TextRun({ text: b.titulo, font: F.sans, size: 48, bold: true, color: C.blanco })] }),
+      new Paragraph({ spacing: { after: 120, line: 240, lineRule: "auto" }, children: [new TextRun({ text: nb(b.titulo), font: F.sans, size: 48, bold: true, color: C.blanco })] }),
       new Paragraph({ children: [new TextRun({ text: `${b.horas} horas · capítulos ${b.caps[0]} a ${b.caps[b.caps.length - 1]}`, font: F.sans, size: 22, color: "C9CFDD" })] }),
       esp(150),
       new Paragraph({ spacing: { after: 160 }, children: [new TextRun({ text: "EN ESTE BLOQUE", font: F.sans, size: 18, bold: true, color: C.gris, characterSpacing: 40 })] }),
@@ -467,7 +470,7 @@ function apertura(el, etiqueta) {
       new Paragraph({ spacing: { after: 60 }, children: [
         new TextRun({ text: (etiqueta || "CAPÍTULO") + "  ", font: F.sans, size: 20, bold: true, color: C.yellow, characterSpacing: 60 }),
         new TextRun({ text: m ? m[1] : "", font: F.sans, size: 20, bold: true, color: C.yellow, characterSpacing: 60 })] }),
-      new Paragraph({ style: "Heading1", children: [new Bookmark({ id, children: [new TextRun({ text: m ? m[2] : el.text, color: C.blanco })] })] }),
+      new Paragraph({ style: "Heading1", children: [new Bookmark({ id, children: [new TextRun({ text: nb(m ? m[2] : el.text), color: C.blanco })] })] }),
     ] });
   return [
     new Paragraph({ spacing: { before: 0, after: 0, line: 20, lineRule: "exact" }, children: [banda] }),
