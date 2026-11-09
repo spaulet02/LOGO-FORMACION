@@ -188,10 +188,11 @@ def banda_capitulo():
     """Banda superior de apertura de capítulo: 21 x 8,5 cm a 300 ppp."""
     W3, H3 = 2480, 1004
     img = Image.new("RGB", (W3, H3), NAVY)
-    pat = Image.new("RGB", (W, int(H3 * W / W3)), NAVY)
-    patron_fup(ImageDraw.Draw(pat), 700, 30, W, pat.height - 40, NAVY_2, NAVY_3)
-    img.paste(pat.resize((W3, H3), Image.LANCZOS), (0, 0))
     d = ImageDraw.Draw(img)
+    # retícula de puntos muy suave, sin bloques: la ilustración del capítulo da el motivo
+    for x in range(40, W3, 60):
+        for y in range(40, H3 - 40, 60):
+            d.ellipse([x - 3, y - 3, x + 3, y + 3], fill=(32, 44, 74))
     d.rectangle([0, H3 - 18, int(W3 * 0.34), H3], fill=YELLOW)
     img.save(OUT / "banda_capitulo.png", optimize=True)
 
@@ -225,3 +226,25 @@ if __name__ == "__main__":
     banda_capitulo()
     pestanas()
     print("Gráficos generados en", OUT)
+
+
+def bandas_por_capitulo():
+    """Une la banda azul con la ilustración de cada capítulo en una sola imagen."""
+    base = Image.open(OUT / "banda_capitulo.png").convert("RGBA")
+    ilus_dir = Path(__file__).resolve().parent.parent / "assets" / "ilustraciones" / "apertura"
+    if not ilus_dir.exists():
+        return
+    W3, H3 = base.size                      # 21 x 8,5 cm a 300 ppp
+    ppcm = W3 / 21
+    for f in sorted(ilus_dir.glob("cap_*.png")):
+        ilus = Image.open(f).convert("RGBA")
+        w = int(6.6 * ppcm)
+        h = int(ilus.height * w / ilus.width)
+        ilus = ilus.resize((w, h), Image.LANCZOS)
+        im = base.copy()
+        im.alpha_composite(ilus, (int((21 - 1.9 - 6.6) * ppcm), int(1.3 * ppcm)))
+        im.convert("RGB").save(OUT / f"banda_{f.stem}.png", optimize=True)
+
+
+if __name__ == "__main__":
+    bandas_por_capitulo()

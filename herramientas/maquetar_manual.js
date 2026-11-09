@@ -468,12 +468,15 @@ function apertura(el, etiqueta) {
   const id = idMarcador();
   indice.push({ nivel: 2, texto: el.text, id });
   const m = el.text.match(/^(\d+)\.\s*(.*)$/) || el.text.match(/^Anexo ([A-Z])\.\s*(.*)$/);
-  const banda = new ImageRun({ type: "png", data: fs.readFileSync(path.join(RAIZ, "assets/generados/banda_capitulo.png")),
+  const claveB = el.text.match(/^(\d+)\./) ? el.text.match(/^(\d+)\./)[1] : (el.text.match(/^Anexo ([A-Z])/) || [0, "A"])[1];
+  const fBanda = path.join(RAIZ, `assets/generados/banda_cap_${claveB}.png`);
+  const banda = new ImageRun({ type: "png", data: fs.readFileSync(fs.existsSync(fBanda) ? fBanda : path.join(RAIZ, "assets/generados/banda_capitulo.png")),
     transformation: { width: Math.round(21 / 2.54 * 96), height: Math.round(8.5 / 2.54 * 96) },
     floating: { horizontalPosition: { relative: HorizontalPositionRelativeFrom.PAGE, offset: 0 },
       verticalPosition: { relative: VerticalPositionRelativeFrom.PAGE, offset: 0 },
       behindDocument: true, allowOverlap: true, lockAnchor: true, layoutInCell: false, wrap: { type: TextWrappingType.NONE } } });
-  const celda = new TableCell({ width: { size: ANCHO, type: WidthType.DXA }, verticalAlign: VerticalAlign.BOTTOM,
+  const ANCHO_TIT = ANCHO - Math.round(6.0 * CM);
+  const celda = new TableCell({ width: { size: ANCHO_TIT, type: WidthType.DXA }, verticalAlign: VerticalAlign.BOTTOM,
     borders: { top: SIN, bottom: SIN, left: SIN, right: SIN }, margins: { top: 0, bottom: 120, left: 0, right: 0 },
     children: [
       new Paragraph({ spacing: { after: 60 }, children: [
@@ -487,12 +490,13 @@ function apertura(el, etiqueta) {
     transformation: { width: Math.round(6.3 / 2.54 * 96), height: Math.round(4.2 / 2.54 * 96) },
     floating: { horizontalPosition: { relative: HorizontalPositionRelativeFrom.PAGE, offset: EMU(21 - 2.0 - 6.3) },
       verticalPosition: { relative: VerticalPositionRelativeFrom.PAGE, offset: EMU(1.2) },
-      behindDocument: true, allowOverlap: true, lockAnchor: true, layoutInCell: false, wrap: { type: TextWrappingType.NONE } } })] : [];
+      behindDocument: false, allowOverlap: true, lockAnchor: true, layoutInCell: false, wrap: { type: TextWrappingType.NONE } } })] : [];
   return [
-    new Paragraph({ spacing: { before: 0, after: 0, line: 20, lineRule: "exact" }, children: [banda, ...ilus] }),
-    new Table({ width: { size: ANCHO, type: WidthType.DXA }, columnWidths: [ANCHO], layout: TableLayoutType.FIXED,
+    new Paragraph({ spacing: { before: 0, after: 0, line: 20, lineRule: "exact" }, children: [banda] }),
+    new Table({ width: { size: ANCHO, type: WidthType.DXA }, columnWidths: [ANCHO_TIT, ANCHO - ANCHO_TIT], layout: TableLayoutType.FIXED,
       borders: { top: SIN, bottom: SIN, left: SIN, right: SIN, insideHorizontal: SIN, insideVertical: SIN },
-      rows: [new TableRow({ height: { value: Math.round(5.6 * CM), rule: HeightRule.EXACT }, children: [celda] })] }),
+      rows: [new TableRow({ height: { value: Math.round(5.6 * CM), rule: HeightRule.EXACT }, children: [celda,
+        new TableCell({ width: { size: ANCHO - ANCHO_TIT, type: WidthType.DXA }, borders: { top: SIN, bottom: SIN, left: SIN, right: SIN }, children: [new Paragraph("")] })] })] }),
     esp(30),
   ];
 }
