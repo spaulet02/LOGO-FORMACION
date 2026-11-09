@@ -3,6 +3,7 @@
 Uso: python3 herramientas/md2json.py condensado/cap_07.md  -> trabajo/manual/cap_07.json
 """
 import json
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -161,7 +162,16 @@ def tabla(c, pref):
 
 def convertir(ruta):
     ruta = Path(ruta)
-    ast = json.loads(subprocess.run(["pandoc", "-f", "markdown", "-t", "json", str(ruta)],
+    # una lista pegada a la línea anterior no la reconoce pandoc: se inserta una línea en blanco
+    lineas = ruta.read_text(encoding="utf-8").split("\n")
+    out = []
+    for l in lineas:
+        es_item = re.match(r"^\s*([-*+]|\d+[.)])\s+\S", l)
+        if es_item and out and out[-1].strip() and not re.match(r"^\s*([-*+]|\d+[.)])\s+", out[-1]) \
+                and not out[-1].startswith((":::", "|", "    ")):
+            out.append("")
+        out.append(l)
+    ast = json.loads(subprocess.run(["pandoc", "-f", "markdown", "-t", "json"], input="\n".join(out),
                                     capture_output=True, text=True, check=True).stdout)
     els = bloques(ast["blocks"], ruta.stem)
     dst = RAIZ / "trabajo" / "manual" / (ruta.stem + ".json")

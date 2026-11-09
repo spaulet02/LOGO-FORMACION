@@ -84,8 +84,10 @@ const numbering = {
 // ---------------------------------------------------------------- imágenes
 const cacheImg = new Map();
 function leerImagen(rel) {
+  const retocada = rel.replace("trabajo/img/", "trabajo/img_manual/");
   const opt = rel.replace("trabajo/img/", "trabajo/img_opt/");
-  if (!cacheImg.has(rel)) cacheImg.set(rel, fs.readFileSync(path.join(RAIZ, fs.existsSync(path.join(RAIZ, opt)) ? opt : rel)));
+  const elegida = [retocada, opt, rel].find((r) => fs.existsSync(path.join(RAIZ, r)));
+  if (!cacheImg.has(rel)) cacheImg.set(rel, fs.readFileSync(path.join(RAIZ, elegida)));
   return cacheImg.get(rel);
 }
 function tamPng(buf) { return { w: buf.readUInt32BE(16), h: buf.readUInt32BE(20) }; }
@@ -420,14 +422,6 @@ function paginaIndice(entradas) {
     children: [
       new Paragraph({ style: "TituloEspecial", children: [new TextRun("Índice general")] }),
       ...entradas.map(entradaIndice),
-      new Paragraph({ style: "TituloEspecial", pageBreakBefore: true, children: [new TextRun("Índice de prácticas")] }),
-      ...practicas.map((p) => {
-        const pag = PAGINAS[p.id] !== undefined ? String(PAGINAS[p.id]) : "000";
-        const m = p.texto.match(/^(Práctica\s+[\d.]+\.?)\s*(.*)$/);
-        return new Paragraph({ style: "Indice2", keepNext: false, tabStops: [{ type: TabStopType.LEFT, position: 1531 }, { type: TabStopType.RIGHT, position: ANCHO, leader: "dot" }],
-          children: [new InternalHyperlink({ anchor: p.id, children: [
-            new TextRun({ text: m ? m[1] : p.texto, bold: true }), new TextRun({ text: m ? "\t" + m[2] : "" }), new TextRun({ text: "\t" + pag, bold: true })] })] });
-      }),
     ],
   };
 }

@@ -6,6 +6,7 @@ SOFFICE=${SOFFICE:-soffice}
 PDFOPT='pdf:writer_pdf_Export:{"IsSkipEmptyPages":{"type":"boolean","value":"false"}}'
 NOMBRE=salida/Manual_LOGO9
 python3 herramientas/graficos.py
+python3 herramientas/tapar_rotulos.py
 python3 herramientas/md2json.py condensado/*.md
 rm -f trabajo/paginas_manual.json
 for pasada in 1 2; do
