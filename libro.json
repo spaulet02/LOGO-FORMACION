@@ -1,0 +1,16 @@
+{
+  "titulo": "LOGO! 9, LOGO!Soft Comfort V9 y LOGO! TDE 9",
+  "subtitulo": "Programación y uso del módulo lógico de Siemens",
+  "tipo": "Libro del alumno",
+  "ciclo": "Ciclo Formativo de Grado Superior · Automatización y Robótica Industrial",
+  "editor": "ITECAM · Centro Tecnológico Industrial de Castilla-La Mancha",
+  "edicion": "Primera edición: noviembre de 2026",
+  "cabecera_par": "LOGO! 9 · LOGO!Soft Comfort V9 · LOGO! TDE 9",
+  "bloques": [
+    {"n": 1, "romano": "I", "titulo": "Primer contacto y automatismos digitales", "resumen": "Capítulos 1 a 13 · Prácticas P01 a P35"},
+    {"n": 2, "romano": "II", "titulo": "Señales analógicas", "resumen": "Capítulos 14 a 19 · Prácticas P36 a P46"},
+    {"n": 3, "romano": "III", "titulo": "LOGO! TDE 9", "resumen": "Capítulos 20 a 24 · Prácticas P47 a P56"},
+    {"n": 4, "romano": "IV", "titulo": "Comunicaciones y funciones avanzadas", "resumen": "Capítulos 25 a 28 · Prácticas P57 a P61"},
+    {"n": 5, "romano": "V", "titulo": "Aplicaciones integradas", "resumen": "Capítulos 29 a 33 · Proyectos PR1 a PR5"}
+  ]
+}

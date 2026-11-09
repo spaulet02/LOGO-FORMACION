@@ -1,0 +1,7 @@
+# Contenido del libro: no se publica en el repositorio público
+originales/
+trabajo/
+salida/
+informe/
+__pycache__/
+*.tmp.docx
