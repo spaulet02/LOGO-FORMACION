@@ -183,9 +183,45 @@ def contraportada_completa():
     img.save(OUT / "contraportada_completa.png", optimize=True)
 
 
+# ---------------------------------------------------------------- manual: banda de capítulo y pestañas
+def banda_capitulo():
+    """Banda superior de apertura de capítulo: 21 x 8,5 cm a 300 ppp."""
+    W3, H3 = 2480, 1004
+    img = Image.new("RGB", (W3, H3), NAVY)
+    pat = Image.new("RGB", (W, int(H3 * W / W3)), NAVY)
+    patron_fup(ImageDraw.Draw(pat), 700, 30, W, pat.height - 40, NAVY_2, NAVY_3)
+    img.paste(pat.resize((W3, H3), Image.LANCZOS), (0, 0))
+    d = ImageDraw.Draw(img)
+    d.rectangle([0, H3 - 18, int(W3 * 0.34), H3], fill=YELLOW)
+    img.save(OUT / "banda_capitulo.png", optimize=True)
+
+
+def pestanas():
+    """Pestañas de bloque para el borde exterior (izquierda y derecha)."""
+    fnt = ImageFont.truetype(FONT, 78)
+    for et in ["I", "II", "III", "IV", "V", "A"]:
+        for lado in ("izq", "der"):
+            w, h = 142, 330
+            img = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+            d = ImageDraw.Draw(img)
+            r = 34
+            if lado == "der":
+                d.rounded_rectangle([0, 0, w + r, h], radius=r, fill=NAVY)
+                d.rectangle([0, 0, 12, h], fill=YELLOW)
+            else:
+                d.rounded_rectangle([-r, 0, w, h], radius=r, fill=NAVY)
+                d.rectangle([w - 12, 0, w, h], fill=YELLOW)
+            tw = d.textlength(et, font=fnt)
+            x = (w - tw) / 2 + (6 if lado == "der" else -6)
+            d.text((x, h / 2 - 48), et, font=fnt, fill=WHITE)
+            img.save(OUT / f"pestana_{et}_{lado}.png", optimize=True)
+
+
 if __name__ == "__main__":
     OUT.mkdir(parents=True, exist_ok=True)
     portadilla()
     portada_completa()
     contraportada_completa()
+    banda_capitulo()
+    pestanas()
     print("Gráficos generados en", OUT)
