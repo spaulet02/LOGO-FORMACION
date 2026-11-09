@@ -8,7 +8,7 @@
     {"n": 1, "romano": "I", "titulo": "El equipo y su puesta en marcha", "horas": 4, "caps": [1, 2, 3, 4]},
     {"n": 2, "romano": "II", "titulo": "Programación con LOGO!Soft Comfort", "horas": 6, "caps": [5, 6, 7, 8, 9]},
     {"n": 3, "romano": "III", "titulo": "Señales analógicas", "horas": 4, "caps": [10, 11, 12]},
-    {"n": 4, "romano": "IV", "titulo": "Pantallas: módulo base y LOGO! TDE 9", "horas": 4, "caps": [13, 14, 15, 16]},
+    {"n": 4, "romano": "IV", "titulo": "Pantallas del módulo base y de la LOGO! TDE 9", "horas": 4, "caps": [13, 14, 15, 16]},
     {"n": 5, "romano": "V", "titulo": "Comunicación avanzada y proyecto final", "horas": 2, "caps": [17, 18, 19]}
   ],
   "anexos": [{"fichero": "anexo_a", "letra": "A"}]
